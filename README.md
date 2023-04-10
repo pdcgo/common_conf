@@ -23,3 +23,16 @@ func beforeRunning() {
 }
 
 ```
+
+
+cara login
+```
+client := auth.NewAuthClient("https://hostname/v2/login")
+	err := client.Login(license.Email, license.Pwd, botID, string(version))
+
+	if err != nil {
+		log.Error().Msg(err.Error())
+		time.Sleep(time.Minute)
+		panic(err)
+	}
+```
