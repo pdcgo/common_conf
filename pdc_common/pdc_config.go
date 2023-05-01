@@ -22,9 +22,9 @@ type PdcConfig struct {
 	Lisensi    Lisensi `json:"lisensi" yaml:"lisensi"`
 	ProjectID  string  `json:"project_id" yaml:"project_id"`
 	Credential []byte  `json:"-" yaml:"-"`
-	Version    string
-	logname    string
-	Hostname   string
+	Version    string  `yaml:"version,omitempty"`
+	logname    string  `yaml:"logname,omitempty"`
+	Hostname   string  `yaml:"hostname,omitempty"`
 }
 
 func (conf *PdcConfig) CredOption() option.ClientOption {
