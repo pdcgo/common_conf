@@ -109,3 +109,10 @@ func ReportError(err error) error {
 
 	return err
 }
+
+func ReportErrorCustom(err error, handler func(event *zerolog.Event) *zerolog.Event) error {
+	event := log.Error().Err(err).Str("stacktrace", string(debug.Stack()))
+	event = handler(event)
+	event.Msg(err.Error())
+	return err
+}

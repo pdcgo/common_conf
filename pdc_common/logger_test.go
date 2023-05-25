@@ -4,6 +4,8 @@ import (
 	"errors"
 	"log"
 	"testing"
+
+	"github.com/rs/zerolog"
 )
 
 func RunDenganPanic() {
@@ -24,4 +26,12 @@ func TestLogger(t *testing.T) {
 	}()
 
 	RunDenganPanic()
+}
+
+func TestLoggerEvent(t *testing.T) {
+
+	ReportErrorCustom(errors.New("test error"), func(event *zerolog.Event) *zerolog.Event {
+		return event.Str("payload", "asdasdasdasd")
+	})
+
 }
