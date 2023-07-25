@@ -2,6 +2,8 @@ package pdc_common
 
 import (
 	"context"
+	"errors"
+	stdlog "log"
 	"os"
 	"runtime/debug"
 	"sync"
@@ -105,6 +107,10 @@ func CapturePanicError() {
 }
 
 func ReportError(err error) error {
+	if errors.Is(err, context.Canceled) {
+		stdlog.Println(err)
+		return err
+	}
 	log.Error().Err(err).Str("stacktrace", string(debug.Stack())).Msg(err.Error())
 
 	return err
