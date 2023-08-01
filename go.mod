@@ -38,5 +38,6 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/mark-ignacio/zerolog-gcp v0.5.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
 )
