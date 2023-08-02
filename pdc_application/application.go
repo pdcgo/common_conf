@@ -80,6 +80,8 @@ func (app *PdcApplication) Run(cfg *AppFileConfig, logName string, handle func(a
 
 	if app.ReplaceLogger {
 		zlog.Logger = logger
+	} else {
+		log.Println("[ warning ] logger not replaced data error not sending to cloud")
 	}
 	app.LogHelper = &LogHelper{
 		logger: &logger,
@@ -154,7 +156,7 @@ func (app *PdcApplication) getAppFileConfig(fname string) (*AppFileConfig, error
 	}
 
 	locfname := app.Base.Path(fname)
-	if _, err := os.Stat(fname); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(locfname); errors.Is(err, os.ErrNotExist) {
 		log.Println("config", locfname, "tidak ada....")
 		return &cfg, errors.New("config " + locfname + " tidak ada....")
 	}
@@ -168,11 +170,11 @@ func (app *PdcApplication) getAppFileConfig(fname string) (*AppFileConfig, error
 	defer f.Close()
 
 	switch ext {
-	case "json":
+	case ".json":
 		err = json.NewDecoder(f).Decode(&cfg)
-	case "yaml":
+	case ".yaml":
 		err = yaml.NewDecoder(f).Decode(&cfg)
-	case "yml":
+	case ".yml":
 		err = yaml.NewDecoder(f).Decode(&cfg)
 	default:
 		err = errors.New(locfname + " configuration format not supported")
