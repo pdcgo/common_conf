@@ -4,6 +4,7 @@ import (
 	"runtime/debug"
 
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 type LogHelper struct {
@@ -20,7 +21,11 @@ func (h *LogHelper) CapturePanicError() {
 func (h *LogHelper) CapturePanicErrorCustom(handles ...func(error)) {
 	if r := recover(); r != nil {
 		err := r.(error)
-		h.Logger.Err(err).Str("stacktrace", string(debug.Stack())).Msg(err.Error())
+		if h.Logger == nil {
+			log.Err(err).Str("stacktrace", string(debug.Stack())).Str("send", "false").Msg(err.Error())
+		} else {
+			h.Logger.Err(err).Str("stacktrace", string(debug.Stack())).Msg(err.Error())
+		}
 
 		for _, handle := range handles {
 			handle(err)
