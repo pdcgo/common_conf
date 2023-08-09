@@ -43,11 +43,13 @@ type PdcApplication struct {
 	AppID         int
 	LogHelper     *LogHelper
 	ReplaceLogger bool
+	OnPanic       []func(err error)
+	OnStartup     []func(app *PdcApplication) error
 
 	Auth *auth.AuthClient
 }
 
-func (app *PdcApplication) RunWithLicenseFile(cfgname string, logname string, handle func(app *PdcApplication)) error {
+func (app *PdcApplication) RunWithLicenseFile(cfgname string, logname string, handle func(app *PdcApplication) error) error {
 	cfg, err := app.getAppFileConfig(cfgname)
 
 	if err != nil {
@@ -72,7 +74,7 @@ func (app *PdcApplication) AuthenticateEmail() error {
 	panic("not implemented")
 }
 
-func (app *PdcApplication) Run(cfg *AppFileConfig, logName string, handle func(app *PdcApplication)) error {
+func (app *PdcApplication) Run(cfg *AppFileConfig, logName string, handle func(app *PdcApplication) error) error {
 	logger, err := app.CreatingLogger(cfg, logName)
 	if err != nil {
 		return err
@@ -87,10 +89,24 @@ func (app *PdcApplication) Run(cfg *AppFileConfig, logName string, handle func(a
 		logger: &logger,
 	}
 
-	handle(app)
+	if app.OnPanic == nil {
+		app.OnPanic = []func(err error){}
+	}
 
-	defer app.LogHelper.CapturePanicError()
-	return nil
+	if app.OnStartup == nil {
+		app.OnStartup = []func(app *PdcApplication) error{}
+	}
+
+	defer app.LogHelper.CapturePanicErrorCustom(app.OnPanic...)
+	// onStartup
+	for _, sthandle := range app.OnStartup {
+		err := sthandle(app)
+		if err != nil {
+			app.LogHelper.ReportError(err)
+			return err
+		}
+	}
+	return handle(app)
 }
 
 func (app *PdcApplication) CreatingLogger(cfg *AppFileConfig, logName string) (zerolog.Logger, error) {
