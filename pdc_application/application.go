@@ -122,7 +122,7 @@ func (app *PdcApplication) Run(cfg *AppFileConfig, logName string, handle func(a
 		log.Println("[ warning ] logger not replaced data error not sending to cloud")
 	}
 	app.LogHelper = &LogHelper{
-		logger: &logger,
+		Logger: &logger,
 	}
 
 	if app.OnPanic == nil {
