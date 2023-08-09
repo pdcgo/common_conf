@@ -106,7 +106,13 @@ func (app *PdcApplication) Run(cfg *AppFileConfig, logName string, handle func(a
 			return err
 		}
 	}
-	return handle(app)
+
+	err = handle(app)
+
+	for _, sthandle := range app.OnPanic {
+		sthandle(err)
+	}
+	return err
 }
 
 func (app *PdcApplication) CreatingLogger(cfg *AppFileConfig, logName string) (zerolog.Logger, error) {
