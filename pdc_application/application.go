@@ -132,10 +132,6 @@ func (app *PdcApplication) Run(cfg *AppFileConfig, logName string, handle func(a
 	defer app.LogHelper.CapturePanicErrorCustom(app.OnPanic...)
 
 	err = handle(app)
-
-	for _, sthandle := range app.OnPanic {
-		sthandle(err)
-	}
 	return err
 }
 
