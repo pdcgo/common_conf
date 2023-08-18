@@ -16,3 +16,4 @@
 logger_credentials.json
 config.yml
 .vs
+test/

@@ -36,6 +36,10 @@ type BaseApplication interface {
 	Path(path ...string) string
 }
 
+type AuthFace interface {
+	Login(email string, password string, botID int, version string) error
+}
+
 type PdcApplication struct {
 	Base          BaseApplication
 	Credential    []byte
@@ -47,7 +51,8 @@ type PdcApplication struct {
 	OnError       []func(err error)
 	OnStartup     []func(app *PdcApplication) error
 
-	Auth *auth.AuthClient
+	Auth AuthFace
+	// Auth *auth.AuthClient
 }
 
 func (app *PdcApplication) RunWithLicenseFile(cfgname string, logname string, handle func(app *PdcApplication) error) error {
@@ -63,6 +68,16 @@ func (app *PdcApplication) RunWithLicenseFile(cfgname string, logname string, ha
 		app.handleError(err)
 		return err
 	}
+
+	startEvent, endEvent, err := app.CreateEventClient(cfg, logname)
+
+	if err != nil {
+		app.handleError(err)
+		return err
+	}
+
+	startEvent()
+	defer endEvent(nil)
 
 	if app.Auth == nil {
 		app.Auth = auth.NewAuthClient("https://pdcoke.com/v2/login")
