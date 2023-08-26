@@ -107,7 +107,7 @@ func CapturePanicError() {
 }
 
 func ReportError(err error) error {
-	if errors.Is(err, context.Canceled) {
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 		stdlog.Println(err)
 		return err
 	}
@@ -117,8 +117,14 @@ func ReportError(err error) error {
 }
 
 func ReportErrorCustom(err error, handler func(event *zerolog.Event) *zerolog.Event) error {
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		stdlog.Println(err)
+		return err
+	}
+
 	event := log.Error().Err(err).Str("stacktrace", string(debug.Stack()))
 	event = handler(event)
 	event.Msg(err.Error())
+
 	return err
 }
