@@ -20,7 +20,7 @@ type Lisensi struct {
 
 type PdcConfig struct {
 	Lisensi    Lisensi `json:"lisensi" yaml:"lisensi"`
-	ProjectID  string  `json:"project_id" yaml:"project_id"`
+	ProjectID  string  `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	Credential []byte  `json:"-" yaml:"-"`
 	Version    string  `yaml:"version,omitempty"`
 	logname    string  `yaml:"logname,omitempty"`
